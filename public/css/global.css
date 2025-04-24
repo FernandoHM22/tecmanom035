@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Chrome, Safari, Edge */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+
+#containerValidateEmployee .icon {
+  width: 1.5em;
+  height: auto;
+  margin-right: 10px;
+}
+
+#containerQuestionaries .headersTitles {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+#containerQuestionaries .headersTitles #title {
+  background-color: #cbcbcb;
+  border-radius: 30px;
+  letter-spacing: 2px;
+}
+
+#containerQuestionaries .headersTitles #client {
+  background-color: #e9775f;
+  border-radius: 30px;
+  color: #fff;
+}
+
+#containerQuestionaries .headersTitles #titleGuide {
+  letter-spacing: 2px;
+  font-weight: 700;
+}
