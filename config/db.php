@@ -21,16 +21,30 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    // Conexión a la base de datos TECMA
-    $hostTEC = $_ENV['DBTEC_HOST'];
-    $portTEC = $_ENV['DBTEC_PORT'];
-    $dbTEC   = $_ENV['DBTEC_DATABASE'];
-    $userTEC   = $_ENV['DBTEC_USERNAME'];
-    $passwordTEC   = $_ENV['DBTEC_PASSWORD'];
+    // Conexión a la base de datos TECMA CENTRAL
+    $hostTECMAJRZ = $_ENV['DBTECMAJRZ_HOST'];
+    $portTECMAJRZ = $_ENV['DBTECMAJRZ_PORT'];
+    $dbTECMAJRZ   = $_ENV['DBTECMAJRZ_DATABASE'];
+    $userTECMAJRZ   = $_ENV['DBTECMAJRZ_USERNAME'];
+    $passwordTECMAJRZ   = $_ENV['DBTECMAJRZ_PASSWORD'];
 
-    $dsnTEC  = "sqlsrv:Server=$hostTEC,$portTEC;Database=$dbTEC";
+    $dsnTECMAJRZ  = "sqlsrv:Server=$hostTECMAJRZ,$portTECMAJRZ;Database=$dbTECMAJRZ";
 
-    $pdoTEC = new PDO($dsnTEC, $userTEC, $passwordTEC, [
+    $pdoTECMAJRZ = new PDO($dsnTECMAJRZ, $userTECMAJRZ, $passwordTECMAJRZ, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+
+    // Conexión a la base de datos TECMA WEST
+    $hostTECMAWEST = $_ENV['DBTECWEST_HOST'];
+    $portTECMAWEST = $_ENV['DBTECWEST_PORT'];
+    $dbTECMAWEST   = $_ENV['DBTECWEST_DATABASE'];
+    $userTECMAWEST   = $_ENV['DBTECWEST_USERNAME'];
+    $passwordTECMAWEST   = $_ENV['DBTECWEST_PASSWORD'];
+
+    $dsnTECMAWEST  = "sqlsrv:Server=$hostTECMAWEST,$portTECMAWEST;Database=$dbTECMAWEST";
+
+    $pdoTECMAWEST = new PDO($dsnTECMAWEST, $userTECMAWEST, $passwordTECMAWEST, options: [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
@@ -38,7 +52,8 @@ try {
     // Retornar las conexiones en un array
     return [
         'nom' => $pdoNOM,
-        'tecma' => $pdoTEC,
+        'tecmaCENTRAL' => $pdoTECMAJRZ,
+        'tecmaWEST' => $pdoTECMAWEST,
     ];
 } catch (PDOException $e) {
     die("Error al conectar a la base de datos: " . $e->getMessage());

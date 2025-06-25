@@ -1,0 +1,29 @@
+#modalSample label {
+  font-size: 0.7em;
+  text-align: right;
+  font-weight: 600;
+}
+
+#modalSample p {
+    font-size: 0.9em;
+    color: #969696;
+}
+
+#modalSample ul li {
+  font-size: 0.8em;
+  color: #969696;
+}
+
+#modalSample #btnCalculateSample {
+  border: none;
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-weight: 600;
+  background-color: #308389;
+  color: #fff;
+}
+
+#modalSample #btnCalculateSample:hover {
+  background-color: #1bc591;
+  color: #fff;
+}

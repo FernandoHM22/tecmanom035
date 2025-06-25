@@ -1,0 +1,120 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f4f4f4;
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  width: 230px;
+  height: calc(100vh - 100px);
+  background: #fff;
+  z-index: 5;
+  padding: 1rem;
+  overflow-y: auto;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#btnMenu {
+  z-index: 20; /* 👈 asegúrate que esté encima de todo */
+  transition: all 0.3s ease;
+  color: #5c9ead;
+}
+
+#sidebar.collapsed + .navbar-top #btnMenu {
+  /* Asegúrate que el botón se mantenga visible */
+  z-index: 999;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: none; /* evita que se pueda hacer click mientras colapsa */
+}
+
+.sidebar .toggle-btn {
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar.collapsed .toggle-btn span {
+  display: none;
+}
+
+.sidebar .section-title {
+  margin-top: 0.5rem;
+  font-weight: 700;
+  color: #5c9ead;
+  background-color: #e6e6e6;
+}
+.sidebar .section-title.first {
+  margin-top: 0; /* elimina el margen solo en la primera */
+}
+
+.sidebar a {
+  margin: 0.2em;
+  display: block;
+  padding: 3px 12px;
+  color: #303030;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+  font-size: 14px;
+}
+
+.sidebar h5{
+  background-color: #e9765f;
+  text-align: center;
+  border-top-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+.sidebar h5 a {
+  color: #fff;
+}
+
+.sidebar a.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  border-left: 4px solid #1c7c85;
+  color: #1c7c85 !important;
+}
+
+.sidebar a:hover:not(:first-child) {
+  background: #f2f2f2;
+  color: #e9765f;
+}
+
+.navbar-top {
+  height: 60px;
+  background: #f4f4f4;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+#user-pill {
+  margin-right: 20px;
+  border-radius: 30px;
+}
+
+#user-pill button{
+  border-radius: 20px;
+}
+
+#user-pill #name,
+#user-pill #userRole {
+  font-size: 12px;
+}
