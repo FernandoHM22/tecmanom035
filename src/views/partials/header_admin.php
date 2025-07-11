@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__DIR__, 3) . '/config/config.php';
+include dirname(__DIR__, 1) . '/partials/head_common.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +17,7 @@ require_once dirname(__DIR__, 3) . '/config/config.php';
     <link rel="manifest" href="<?= asset('public/img/favicon/site.webmanifest') ?>" />
     <link rel="stylesheet" href="<?= asset('public/css/global.css') ?>">
     <link rel="stylesheet" href="<?= asset('public/css/sidebar.css') ?>">
+    <link rel="stylesheet" href="<?= asset('public/css/tables.css') ?>">
     <link rel="stylesheet" href="<?= asset('public/css/modals.css') ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet">

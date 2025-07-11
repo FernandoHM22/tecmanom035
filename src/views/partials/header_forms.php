@@ -1,3 +1,6 @@
+<?php
+include dirname(__DIR__, 1) . '/partials/head_common.php';
+?>
 <!DOCTYPE html>
 <html>
 
