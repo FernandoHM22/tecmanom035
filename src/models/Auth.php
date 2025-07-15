@@ -2,7 +2,7 @@
 
 class Login
 {
-    public static function attemptLogin(string $email, PDO $pdo): ?array
+    public static function attemptLogin($email, $pdo)
     {
         $sql = "
             SELECT TOP 1 U.UserID, U.Email, U.FullName, U.PasswordHash, U.Region, R.RoleName
