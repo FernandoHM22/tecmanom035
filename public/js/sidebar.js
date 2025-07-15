@@ -15,6 +15,10 @@ async function initSidebar() {
       icon.removeClass("fa-bars fa-x");
       icon.addClass(isCollapsed ? "fa-x" : "fa-bars");
     });
+
+    // $(document).on("mouseenter", "#btnMenu", function () {
+    //   $(this).trigger("click");
+    // });
   };
 
   const applySidebarState = () => {
@@ -31,13 +35,19 @@ async function initSidebar() {
 
   const markActiveLink = () => {
     const currentPath = window.location.pathname;
+    const currentSegment = getLastSegmentPage(currentPath);
 
     $("#sidebar a").each(function () {
       const href = $(this).attr("href");
-      if (currentPath === href || currentPath.startsWith(href + "/")) {
+      const hrefSegment = getLastSegmentPage(href);
+      if (currentSegment === hrefSegment) {
         $(this).addClass("active");
       }
     });
+  };
+
+  const getLastSegmentPage = (url) => {
+    return url.split("/").filter(Boolean).pop();
   };
 
   try {

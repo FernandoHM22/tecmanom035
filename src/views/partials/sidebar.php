@@ -2,8 +2,7 @@
        <h5><a href="<?= BASE_URL?>/dashboard">Home</a></h5>
        <div class="section-title first">Aplicación</div>
        <a href="<?= BASE_URL?>/admin/schedule">Programar</a>
-       <a href="<?= BASE_URL?>/responder">Responder</a>
-       <a href="<?= BASE_URL?>/status">Estatus</a>
+       <a href="<?= BASE_URL?>/admin/status">Estatus</a>
 
        <div class="section-title">Resultados</div>
        <a href="<?= BASE_URL?>/resultados/cliente">Cliente</a>
