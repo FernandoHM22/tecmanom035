@@ -4,21 +4,37 @@ if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__));
 }
 
-// Detectar dinámicamente la BASE_URL
-$scriptDir = dirname($_SERVER['SCRIPT_NAME']); // Ejemplo: /tecmanom035/public/views/forms
-$base = explode('/public', $scriptDir)[0];      // Cortamos hasta /public
-define('BASE_URL', $base ?: '');                 // Si no hay base, será la raíz ('')
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+            ? 'https'
+            : 'http';
+
+$host = $_SERVER['HTTP_HOST'];
+
+// Solo incluye ruta base si existe (por ejemplo en localhost)
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
+$basePath = explode('/public', $scriptName)[0];
+
+// Elimina index.php si aparece
+$basePath = str_replace('/index.php', '', $basePath);
+$basePath = rtrim($basePath, '/');
+
+define('BASE_URL', "$protocol://$host$basePath");
+
+
 
 // 🔧 Función para rutas a archivos estáticos
 function asset($path)
 {
-    return rtrim(BASE_URL, '/') . '/' . ltrim($path, '/');
+    $url = rtrim(BASE_URL, '/\\') . '/' . ltrim(str_replace('\\', '/', $path), '/');
+    return $url;
 }
 
 // 🔧 Función para rutas controladas por router.php
 function route($path = '')
 {
-    return rtrim(BASE_URL, '/') . '/' . ltrim($path, '/');
+    $url = rtrim(BASE_URL, '/\\') . '/' . ltrim(str_replace('\\', '/', $path), '/');
+    return $url;
 }
 
 // Conexión a base de datos (puedes mantenerlo igual)

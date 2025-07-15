@@ -36,7 +36,9 @@ async function initForms() {
   }
 
   const currentYear = new Date().getFullYear();
-  let guideType = null;
+  // let guideType = null;
+  const guideType = JSON.parse(sessionStorage.getItem("guideType")) || null;
+
   let questionsGuide = [];
   let complementaryQuestions = [];
   let answers = [];
@@ -447,7 +449,7 @@ async function initForms() {
 
   try {
     await loadInstructions();
-    await fetchSurveyConfig();
+    //await fetchSurveyConfig();
     await fetchGuideInfo();
     await fetchGuideData();
     //await fetchSupplementaryQuestions();

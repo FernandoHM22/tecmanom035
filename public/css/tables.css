@@ -1,0 +1,33 @@
+#main-content-schedule #sampleTabsContent table thead {
+  font-size: 0.8rem;
+}
+
+#main-content-schedule #sampleTabsContent table tbody {
+  font-size: 0.8rem;
+}
+
+#main-content-schedule #sampleTabsContent table tbody tr td:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px; /* o el ancho que desees */
+}
+
+#main-content-schedule #sampleTabsContent table tbody tr td:not(:first-child) {
+  text-align: center;
+}
+
+#main-content-status #project-status-table td:not(:first-child),
+#main-content-status #project-status-table th:not(:first-child) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+#main-content-status .sample-ok {
+  background-color: #e9fbe9; /* verde claro */
+}
+
+#main-content-status .sample-missing {
+  background-color: #fdecea; /* rojo claro */
+}

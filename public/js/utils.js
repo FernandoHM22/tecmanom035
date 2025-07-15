@@ -16,8 +16,9 @@ function loadForm(formPath, targetSelector, callback = null) {
 }
 
 function goTo(relativePath) {
-  const normalizedPath = "/" + relativePath.replace(/^\/+/, "");
-  const fullUrl = BASE_URL + normalizedPath;
+  const normalizedBase = BASE_URL.replace(/\/+$/, ""); // quita slash final de BASE_URL
+  const normalizedPath = "/" + relativePath.replace(/^\/+/, ""); // quita slashes dobles al inicio
+  const fullUrl = normalizedBase + normalizedPath;
   window.location.href = fullUrl;
 }
 

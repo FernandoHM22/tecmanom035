@@ -21,13 +21,13 @@ class AuthController
             : ['success' => false, 'message' => 'No se pudieron guardar los datos.'];
     }
 
-    private static function getJwtSecret(): string
+    private static function getJwtSecret()
     {
         return $_ENV['JWT_SECRET'];
     }
     private const JWT_EXPIRE_SECONDS = 3600 * 24; // 24 horas
 
-    public static function login(string $email, string $password, PDO $pdo): array
+    public static function login( $email,  $password,  $pdo)
     {
         $user = Login::attemptLogin($email, $pdo);
 
@@ -60,7 +60,7 @@ class AuthController
         ];
     }
 
-    public static function verifyToken(string $token): array|null
+    public static function verifyToken($token)
     {
         try {
             $decoded = JWT::decode($token, new Key(self::getJwtSecret(), 'HS256'));
@@ -70,7 +70,7 @@ class AuthController
         }
     }
 
-    public static function getUserInfoFromToken(string $token): array|null
+    public static function getUserInfoFromToken($token)
     {
         $decoded = self::verifyToken($token);
         return $decoded ? [

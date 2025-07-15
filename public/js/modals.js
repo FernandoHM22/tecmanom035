@@ -1,10 +1,14 @@
 const ModalHandlers = {
   // contenido para modal de muestras
   sample(modal, projectElement) {
-    const ProjectID = $(projectElement).attr("data-id");
     const headcount = parseInt($(projectElement).attr("data-headcount"), 10);
-    const countFemale = parseInt($(projectElement).attr("data-female-count"), 10);
+    const countFemale = parseInt(
+      $(projectElement).attr("data-female-count"),
+      10
+    );
     const countMale = parseInt($(projectElement).attr("data-male-count"), 10);
+
+    const alertHeadcount = headcount < 60 ? "alert alert-info" : "d-none";
 
     const content = `
       <p>La selección de muestra se basa en la siguiente ecuación:</p>
@@ -20,6 +24,9 @@ const ModalHandlers = {
         </ul>
       </div>
     <hr>
+    <div class="${alertHeadcount} mb-3" role="alert">
+        <p class="mb-0">El número total de colaboradores debe ser mayor o igual a 60 colaboradores para calcular la muestra. Caso contrario se tomara el 100%</p>
+    </div>
     <div class="row">
         <div class="col">
             <div class="form-group row">
@@ -72,13 +79,23 @@ const ModalHandlers = {
             </div>
         </div>
     </div>
-    <div class="text-center mt-5">
-      <button class="btn btn-primary btn-sm" id="btnCalculateSample">Calcular muestra</button>
-    </div>
-
     `;
     $(modal).find(".modal-body").html(content);
   },
+  changeLogo(modal, projectElement) {
+    const content = `
+        <div id="upload-new-logo" class="mt-3">
+            <input class="form-control mb-2" type="file" id="new-logo" accept="image/png">
+            <button id="confirm-new-logo" class="btn btn-primary">Confirmar carga</button>
+        </div>
+        `;
+
+    $(modal).find(".modal-body").html(content);
+  },
+
+  //   <div class="text-center mt-5">
+  //   <button class="btn btn-primary btn-sm" id="btnCalculateSample">Calcular muestra</button>
+  // </div>
 
   //   userEdit(modal) {
   //     const content = `

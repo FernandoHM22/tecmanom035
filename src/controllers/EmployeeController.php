@@ -3,9 +3,9 @@ require_once BASE_PATH . '/src/models/Employee.php';
 
 class EmployeeController
 {
-    public static function validateEmployee($cb_codigo, $pdo)
+    public static function validateEmployee($cb_codigo, $region, $pdo)
     {
-        $employee = Employee::findByCodigo($cb_codigo, $pdo);
+        $employee = Employee::findByCodigo($cb_codigo, $region, $pdo);
 
         if ($employee) {
             return [
@@ -20,7 +20,7 @@ class EmployeeController
         }
     }
 
-       public static function submitEmployeeData($input, $pdo)
+    public static function submitEmployeeData($input, $pdo)
     {
         $employee = Employee::saveDemographics($input, $pdo);
 

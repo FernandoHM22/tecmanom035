@@ -41,6 +41,11 @@ body {
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+.login-form button:hover {
+  color: #fff;
+  background: #063c42;
+}
+
 .top-nav {
   position: absolute;
   top: 2rem;

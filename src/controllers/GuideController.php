@@ -48,7 +48,7 @@ class GuideController
         } else {
             return [
                 'success' => false,
-                'message' => 'Guia no encontrada'
+                'message' => 'No se encontró algún cuestionario programado para el proyecto especificado, por favor comuníquelo al aplicador'
             ];
         }
     }

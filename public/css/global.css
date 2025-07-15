@@ -19,10 +19,29 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
-button .icon{
+button .icon, img.icon {
   width: 1.2em;
   height: auto;
   margin-right: 10px;
+}
+
+.alert {
+  background: #fefefe !important;
+  color: #666666 !important;
+  font-weight: bold !important;
+  font-size: small !important;
+  padding: 12px !important;
+  padding-left: 16px !important;
+  border-top: solid 3px #cccccc !important;
+  border-radius: 5px !important;
+  margin-bottom: 10px !important;
+  -webkit-box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+  -moz-box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.08) !important;
+}
+
+.alert-info {
+  border-color: #b8dbf2 !important;
 }
 
 #containerValidateEmployee .icon,
@@ -236,7 +255,7 @@ button .icon{
 }
 
 #main-content {
-  margin-top: 60px; /* para no quedar detrás del navbar */
+  margin-top: 50px; /* para no quedar detrás del navbar */
   margin-left: 240px; /* desplazamiento por sidebar */
   transition: margin-left 0.3s ease;
   padding: 2rem;
@@ -282,6 +301,12 @@ button .icon{
 #main-content-schedule #client-list li.active {
   background-color: #308389;
   color: #fff;
+}
+
+#main-content-schedule #client-list li.survey-active {
+  background-color: #e17a62;
+  color: #fff;
+  font-weight: bold;
 }
 
 #main-content-schedule .custom-field {
@@ -334,4 +359,153 @@ button .icon{
   background-color: #a6d2d2;
 }
 
+#rh-data label {
+  font-size: 0.8rem;
+}
 
+#btnSample {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  background-color: #328186;
+  color: #fff;
+  border-radius: 30px;
+  padding: 8px 24px;
+  font-weight: 600;
+  line-height: 1;
+  overflow: hidden;
+  border: none;
+  width: 200px; /* ajusta según tu necesidad */
+}
+
+#btnSample:hover {
+  background-color: #215555;
+}
+
+p.text-muted {
+  font-size: 0.8rem;
+  margin-top: 10px;
+}
+
+#generalSampleFactorContainer {
+  border-radius: 30px; /* redondeado del contenedor */
+}
+
+.badge-pill-custom {
+  background-color: #328186;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  min-width: 90px;
+  text-align: center;
+}
+
+#generalSampleFactorContainer #title {
+  padding: 0 0 0 10px;
+  font-size: 0.8rem;
+}
+
+#btnSaveSurvey {
+  background-color: #328186;
+  color: #fff;
+  width: 15%;
+  border-top-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  display: none;
+}
+
+@keyframes breathe {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.breathe-once {
+  animation: breathe 0.6s ease-in-out;
+}
+
+#logos-container .p-3 {
+  max-height: 150px; /* o lo que consideres adecuado */
+  overflow: auto;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: nowrap; /* <-- No permite que se vaya abajo */
+}
+
+.logo-image {
+  max-width: 150px;
+  height: auto;
+}
+
+.custom-radio {
+  display: flex;
+  gap: 10px;
+}
+
+.custom-radio input[type="radio"] {
+  display: none;
+}
+
+.custom-radio label {
+  padding: 8px 18px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+  font-weight: 500;
+  border: none;
+}
+
+/* Estilos separados para "Sí" y "No" */
+#logo-yes + label {
+  background-color: #d1e7dd; /* Suave verde */
+  color: #198754;
+}
+
+#logo-yes:checked + label {
+  background-color: #198754;
+  color: white;
+}
+
+#logo-no + label {
+  background-color: #f8d7da; /* Suave rojo */
+  color: #dc3545;
+}
+
+#logo-no:checked + label {
+  background-color: #dc3545;
+  color: white;
+}
+
+.nav-tabs .nav-link {
+  font-size: 0.9rem;
+}
+
+.unopened-tab {
+  background-color: #ececec !important; /* gris claro */
+  color: #5d5d5e !important;
+}
+
+.opened-tab {
+  background-color: #d1e7dd !important; /* verde claro */
+  color: #0f5132 !important;
+  font-weight: bold;
+}

@@ -72,7 +72,7 @@ body {
   font-size: 14px;
 }
 
-.sidebar h5{
+.sidebar h5 {
   background-color: #e9765f;
   text-align: center;
   border-top-left-radius: 25px;
@@ -103,6 +103,9 @@ body {
   left: 0;
   right: 0;
   z-index: 10;
+  box-shadow: 0px 10px 10px -13px rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 0px 10px 10px -13px rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 0px 10px 10px -13px rgba(0, 0, 0, 0.6);
 }
 
 #user-pill {
@@ -110,7 +113,7 @@ body {
   border-radius: 30px;
 }
 
-#user-pill button{
+#user-pill button {
   border-radius: 20px;
 }
 

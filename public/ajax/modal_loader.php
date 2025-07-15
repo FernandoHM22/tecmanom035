@@ -4,7 +4,6 @@ $modal = str_replace(['..', '//'], '', $modal); // seguridad básica
 
 $path = dirname(__DIR__, 2) . '/src/views/modals/' . $modal . '.php';
 
-echo "Cargando modal desde: $path"; // depuración, eliminar en producción
 if (file_exists($path)) {
     include $path;
 } else {

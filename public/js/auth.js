@@ -53,7 +53,18 @@ async function authFetch(url, options = {}) {
       return;
     }
 
-    return await res.json();
+    if (res.status >= 500) {
+      Swal.fire("Error del servidor", "Inténtalo más tarde", "error");
+      return;
+    }
+
+    // Intenta parsear como JSON, atrápalo si falla
+    try {
+      return await res.json();
+    } catch (jsonError) {
+      Swal.fire("Error", "Respuesta inválida del servidor", "error");
+      return;
+    }
   } catch (error) {
     console.error("authFetch error:", error);
     Swal.fire("Error", "No se pudo conectar al servidor", "error");
@@ -109,6 +120,20 @@ async function initAuth() {
       fetchRegister();
     });
 
+    $("#email-user, #password-user").on("keypress", function (e) {
+      if (e.which === 13) {
+        // 13 = tecla Enter
+        const emailUser = $("#email-user").val().trim();
+        const password = $("#password-user").val().trim();
+
+        if (emailUser && password) {
+          $("#login-button").click(); // Simula clic en el botón de login
+        } else {
+          alert("Por favor llena ambos campos.");
+        }
+      }
+    });
+
     $(document).on("click", "#login-button", async (e) => {
       e.preventDefault();
 
@@ -128,9 +153,8 @@ async function initAuth() {
         if (response.success) {
           sessionStorage.setItem("jwt", response.token);
           sessionStorage.setItem("user", JSON.stringify(response.user));
-          Swal.fire("Bienvenido", "Acceso exitoso", "success").then(() => {
-            goTo("admin/schedule");
-          });
+
+          goTo("admin/schedule");
         } else {
           Swal.fire("Error", response.message, "error");
         }

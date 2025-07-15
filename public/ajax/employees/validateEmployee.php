@@ -24,7 +24,7 @@ try {
                 break;
         }
 
-        $response = EmployeeController::validateEmployee($cb_codigo, $pdo);
+        $response = EmployeeController::validateEmployee($cb_codigo, $region, $pdo);
         echo json_encode($response);
     } else {
         echo json_encode([

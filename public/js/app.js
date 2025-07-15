@@ -31,6 +31,10 @@ $(async function () {
       if (typeof initAdminSchedule === "function") await initAdminSchedule();
       break;
 
+    case "admin-status":
+      if (typeof initAdminStatus === "function") await initAdminStatus();
+      break;
+
     case "auth-register":
       if (typeof initAuth === "function") await initAuth();
       break;

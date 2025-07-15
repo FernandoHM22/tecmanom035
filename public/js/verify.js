@@ -111,7 +111,7 @@ async function initVerify() {
             getInfoEmployee(cb_codigo, region);
           }
         }, timer);
-      }else{
+      } else {
         $('input[type="text"]:not(#input_cb_codigo)').val("");
       }
     });
@@ -119,7 +119,18 @@ async function initVerify() {
     $(document).on("click", "#btnVerify", async (e) => {
       e.preventDefault();
       const cb_codigo = $("#input_cb_codigo").val().trim();
-      if (!cb_codigo) return;
+      const projectId = dataEmployee["projectId"].trim(); // Asignar un valor por defecto si no existe
+      if (!cb_codigo || !projectId) {
+        swal.fire(
+          "Atención",
+          "Por favor, ingrese el número de empleado para obtener su información.",
+          "warning"
+        );
+        return;
+      }
+      
+      const guideType = await fetchSurveyConfig(projectId);
+      if (!guideType) return; // Ya se mostró el Swal si fue error
 
       const result = await Swal.fire({
         title: "¿Está seguro de iniciar?",
@@ -133,10 +144,9 @@ async function initVerify() {
       });
 
       if (result.isConfirmed) {
-        // window.location.href = `${BASE_URL}/forms?project=AMCOR`;
-        dataEmployee = await completeInfoEmployee(cb_codigo); // asegúrate que retorna un objeto
+        dataEmployee = await completeInfoEmployee(cb_codigo);
         sessionStorage.setItem("dataEmployee", JSON.stringify(dataEmployee));
-        // var projectID = dataEmployee.proyecto_id || "AMCOR"; // Asignar un valor por defecto si no existe
+        sessionStorage.setItem("guideType", guideType);
         window.location.href = `forms`;
       }
     });
@@ -186,6 +196,27 @@ async function initVerify() {
       employee.rango_antiguedad = getRangoAntiguedad(mesesAntiguedad);
 
       return employee;
+    };
+
+    const fetchSurveyConfig = async (projectId) => {
+      const response = await $.ajax({
+        url: apiUrl("guides/getSurveyConfig.php"),
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify({ project_id: projectId }),
+      });
+
+      if (!response.success) {
+        await Swal.fire({
+          title: "Aviso",
+          text: response.message,
+          icon: "warning",
+        });
+        return null; // O false, pero no devuelvas el Swal
+      } else {
+        return response.data.GuideID;
+      }
     };
   };
 
