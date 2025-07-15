@@ -2,10 +2,10 @@
 
 class Employee
 {
-  public static function findByCodigo($cb_codigo, $pdo)
+  public static function findByCodigo($cb_codigo, $region, $pdo)
   {
-
-    $stmt = $pdo->prepare("
+    if ($region === 'CENTRAL') {
+      $stmt = $pdo->prepare("
             SELECT
                 CASE WHEN C.CB_SEXO = 'F' THEN 'Mujer' ELSE 'Hombre' END AS genero,
                 CAST(
@@ -46,6 +46,50 @@ class Employee
             LEFT JOIN ESTUDIOS EST ON C.CB_ESTUDIO = EST.TB_CODIGO
             WHERE C.CB_CODIGO = :cb_codigo
         ");
+    } else if ($region === 'WEST') {
+      $stmt = $pdo->prepare("
+            SELECT
+                CASE WHEN C.CB_SEXO = 'F' THEN 'Mujer' ELSE 'Hombre' END AS genero,
+                CAST(
+                    (DATEDIFF(YEAR, C.CB_FEC_NAC, GETDATE())
+                      - CASE 
+                          WHEN MONTH(C.CB_FEC_NAC) > MONTH(GETDATE()) 
+                            OR (MONTH(C.CB_FEC_NAC) = MONTH(GETDATE()) AND DAY(C.CB_FEC_NAC) > DAY(GETDATE()))
+                        THEN 1 ELSE 0 
+                      END) AS VARCHAR(10)
+                ) + ' años' AS edad,
+                EC.TB_ELEMENT AS estado_civil,
+                EST.TB_ELEMENT AS nivel_estudios,
+                T.TU_DESCRIP AS turno,
+                CASE 
+                  WHEN DATEDIFF(DAY, C.CB_FEC_ANT, GETDATE()) < 30 THEN 
+                    CAST(DATEDIFF(DAY, C.CB_FEC_ANT, GETDATE()) AS VARCHAR(10)) + ' días'
+                  WHEN DATEDIFF(MONTH, C.CB_FEC_ANT, GETDATE()) < 12 THEN 
+                    CAST(DATEDIFF(MONTH, C.CB_FEC_ANT, GETDATE()) AS VARCHAR(10)) + ' meses'
+                  ELSE 
+                    CAST(DATEDIFF(MONTH, C.CB_FEC_ANT, GETDATE()) / 12 AS VARCHAR(10)) + ' años'
+                END AS antiguedad,
+                A.TB_ELEMENT AS area,
+                S.TB_ELEMENT AS supervisor,
+                C.PRETTYNAME AS nombre,
+                C.CB_CODIGO,
+				C.CB_NIVEL1 AS projectId,
+                P.TB_ELEMENT AS cliente,
+                E.TB_ELEMENT AS planta,
+                C.CB_ACTIVO AS estatus,
+				'WEST' AS region
+            FROM COLABORA C
+            LEFT JOIN NIVEL1 P ON C.CB_NIVEL1 = P.TB_CODIGO
+            LEFT JOIN NIVEL8 S ON C.CB_NIVEL8 = S.TB_CODIGO
+            LEFT JOIN NIVEL6 A ON C.CB_NIVEL6 = A.TB_CODIGO
+            LEFT JOIN NIVEL7 E ON C.CB_NIVEL7 = E.TB_CODIGO
+            LEFT JOIN TURNO T ON C.CB_TURNO = T.TU_CODIGO
+            LEFT JOIN EDOCIVIL EC ON C.CB_EDO_CIV = EC.TB_CODIGO
+            LEFT JOIN ESTUDIOS EST ON C.CB_ESTUDIO = EST.TB_CODIGO
+			WHERE C.CB_CODIGO = :cb_codigo
+      ");
+    }
+
 
     $stmt->bindParam(':cb_codigo', $cb_codigo, PDO::PARAM_STR);
     $stmt->execute();
