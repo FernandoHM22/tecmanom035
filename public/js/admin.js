@@ -105,6 +105,15 @@ async function initAdminSchedule() {
     });
   };
 
+  $(document).on(
+    "dblclick",
+    "#client-list li.survey-active",
+    async function (e) {
+      e.preventDefault();
+      goTo("/admin/status");
+    }
+  );
+
   $(document).on("click", "#client-list li", async function (e) {
     e.preventDefault();
     if ($(this).hasClass("active")) return;
@@ -915,40 +924,6 @@ async function initAdminStatus() {
     }
   };
 
-  // function renderProjectStatus(data) {
-  //   const tableContainer = $("#status-table-container");
-  //   tableContainer.empty(); // Limpia el contenedor antes de renderizar
-
-  //   if (data.length === 0) {
-  //     tableContainer.append("<p>No hay datos disponibles.</p>");
-  //     return;
-  //   }
-
-  //   const table = $('<table class="table table-striped table-sm" id="project-status-table"></table>');
-  //   const thead = $(
-  //     "<thead><tr><th>Cliente</th><th>Headcount</th><th>Muestra</th><th># Hombres</th><th>M Hombres</th><th># Mujeres</th><th>M Mujeres</th><th>% Muestra</th></tr></thead>"
-  //   );
-  //   const tbody = $("<tbody></tbody>");
-
-  //   data.forEach((item) => {
-  //     const missingProject = item.SampleValue <= 0 ? "inactive" : "";
-  //     const row = $('<tr class="' + missingProject + '"></tr>');
-  //     row.append(`<td>${item.ProjectName}</td>`);
-  //     row.append(`<td>${item.Headcount}</td>`);
-  //     row.append(`<td>${item.SampleValue}</td>`);
-  //     row.append(`<td>${item.MaleCount}</td>`);
-  //     row.append(`<td>${item.SampleMaleValue}</td>`);
-  //     row.append(`<td>${item.FemaleCount}</td>`);
-  //     row.append(`<td>${item.SampleFemaleValue}</td>`);
-  //     row.append(`<td>${item.SamplePercentage}%</td>`);
-  //     tbody.append(row);
-  //   });
-
-  //   table.append(thead);
-  //   table.append(tbody);
-  //   tableContainer.append(table);
-  // }
-
   const renderProjectStatusDataTable = async () => {
     const data = await getProjectStatusData();
     if (data.length === 0) return;
@@ -976,6 +951,8 @@ async function initAdminStatus() {
           title: "% Muestra",
           render: (data) => `${data}%`,
         },
+        { data: "GuideID", title: "Guia" },
+        { data: "ApplicationDate", title: "Fecha de Aplicación" },
       ],
       rowCallback: function (row, data) {
         if (data.SampleValue > 0) {
@@ -983,12 +960,29 @@ async function initAdminStatus() {
         } else {
           $(row).addClass("sample-missing");
         }
+
+        // Agrega tooltip y click al primer <td>
+        const firstCell = $("td", row).eq(0);
+
+        firstCell
+          .attr("title", "Ver detalles del proyecto") // Tooltip nativo
+          .css("cursor", "pointer")
+          .on("click", function () {
+            // Aquí defines la navegación
+            // window.location.href = `/tracker/ClientTracker?projectid=${data.ProjectID}`; // o usa otro dato
+            goTo("admin/tracker/client");
+            localStorage.setItem("selectedProjectStatus", data.ProjectID);
+          });
       },
       order: [[2, "desc"]], // ← Columna 2 (índice empieza en 0), orden descendente
-      dom: "Bfrtip",
-      buttons: ["excelHtml5", "print"],
+      // dom: "Bfrtip",
+      // buttons: ["excelHtml5", "print"],
       language: {
-        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-MX.json",
+        url: "https://cdn.datatables.net/plug-ins/2.3.2/i18n/es-MX.json",
+        paginate: {
+          previous: "◄",
+          next: "►",
+        },
       },
     });
   };
@@ -998,5 +992,458 @@ async function initAdminStatus() {
   } catch (err) {
     Swal.fire("Error", err.message, "error");
     console.error(err);
+  }
+}
+
+async function initAdminClientTracker() {
+  const user = getCurrentUser();
+  const userRegion = user.region;
+  let autoRefreshInterval = null;
+  let lastProject = null;
+
+  const getConfiguredProjects = async () => {
+    const url = apiUrl("projects/getConfiguredProjects.php");
+
+    const response = await authFetch(url, {
+      method: "POST",
+      body: { region: userRegion },
+    });
+
+    if (!response) return;
+
+    if (response.success && Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      Swal.fire(
+        "Atención",
+        response.message || "No se encontraron proyectos activos.",
+        "info"
+      );
+    }
+  };
+
+  const renderConfiguredProjects = async () => {
+    const projects = await getConfiguredProjects();
+    if (!projects || projects.length === 0) return;
+
+    const selectProjects = $("#client-configured-select");
+    const selectYears = $("#years-select");
+
+    selectProjects.empty();
+    selectYears.empty();
+
+    selectProjects.append(new Option("", "", true, true));
+    selectYears.append(new Option("", "", true, true));
+
+    const uniquePeriods = new Set();
+    const currentYear = new Date().getFullYear().toString();
+    let selectedIndex = 0;
+
+    projects.forEach((project) => {
+      selectProjects.append(
+        new Option(project.ProjectName, project.ProjectID.trim())
+      );
+
+      if (!uniquePeriods.has(project.Period)) {
+        uniquePeriods.add(project.Period);
+
+        const isCurrent = project.Period === currentYear;
+        const option = new Option(
+          project.Period,
+          project.Period,
+          isCurrent,
+          isCurrent
+        );
+        selectYears.append(option);
+      }
+    });
+  };
+
+  const areaTrackerColumns = [
+    { key: "AreaName" },
+    { key: "TotalEmployees" },
+    { key: "SampleCompleted", realtime: true },
+    { key: "MaleEmployees" },
+    { key: "MaleCompleted", realtime: true },
+    { key: "FemaleEmployees" },
+    { key: "FemaleCompleted", realtime: true },
+    { key: "Completed" },
+  ];
+
+  const supervisorTrackerColumns = [
+    { key: "SupervisorName" },
+    { key: "TotalEmployees" },
+    { key: "SampleCompleted", realtime: true },
+    { key: "MaleEmployees" },
+    { key: "MaleCompleted", realtime: true },
+    { key: "FemaleEmployees" },
+    { key: "FemaleCompleted", realtime: true },
+    { key: "Completed" },
+  ];
+
+  const shiftTrackerColumns = [
+    { key: "ShiftName" },
+    { key: "TotalEmployees" },
+    { key: "SampleCompleted", realtime: true },
+    { key: "MaleEmployees" },
+    { key: "MaleCompleted", realtime: true },
+    { key: "FemaleEmployees" },
+    { key: "FemaleCompleted", realtime: true },
+    { key: "Completed" },
+  ];
+
+  $(document).on("change", "#client-configured-select", async function () {
+    const projectId = $(this).val();
+    const selectYears = $("#years-select").val();
+    if (!projectId || !selectYears) return;
+
+    const data = await fetchTableData("getGeneralData.php", {
+      projectId,
+      selectYears,
+    });
+
+    if (data) renderTableGeneralTracker(data);
+    else
+      return swal.fire(
+        "Error",
+        "No se encontraron datos para el seguimiento general.",
+        "error"
+      );
+
+    const areaData = await fetchTableData("getAreaData.php", {
+      projectId,
+      selectYears,
+    });
+
+    if (areaData)
+      renderTrackerTables(
+        "#table-area-client-tracker",
+        areaData,
+        areaTrackerColumns
+      );
+    else
+      return swal.fire(
+        "Error",
+        "No se encontraron datos para el seguimiento por área.",
+        "error"
+      );
+
+    const supervisorData = await fetchTableData("getSupervisorData.php", {
+      projectId,
+      selectYears,
+    });
+
+    if (supervisorData)
+      renderTrackerTables(
+        "#table-supervisor-client-tracker",
+        supervisorData,
+        supervisorTrackerColumns
+      );
+
+    const shiftData = await fetchTableData("getShiftData.php", {
+      projectId,
+      selectYears,
+    });
+    if (shiftData)
+      renderTrackerTables(
+        "#table-workshift-client-tracker",
+        shiftData,
+        shiftTrackerColumns
+      );
+    else
+      return swal.fire(
+        "Error",
+        "No se encontraron datos para el seguimiento por turno.",
+        "error"
+      );
+  });
+
+  async function fetchTableData(endpoint, payload) {
+    const url = apiUrl("tracker/" + endpoint);
+    const response = await authFetch(url, {
+      method: "POST",
+      body: payload,
+    });
+    if (response?.success && Array.isArray(response.data)) return response.data;
+    return null;
+  }
+
+  const renderTableGeneralTracker = (data) => {
+    const tableBody = $("#table-general-client-tracker tbody");
+    tableBody.empty();
+
+    const item = data[0]; // Solo una fila para proyecto general
+    const row = $("<tr></tr>");
+
+    // Render con placeholders en columnas vacías
+    row.append($("<td></td>").text(item.SampleValue)); // Col 0
+    row.append($("<td></td>").attr("data-col", "SampleCompleted")); // Col 1 (realtime)
+    row.append($("<td></td>").text(item.GeneralSampleFactor * 100 + "%")); // Col 2
+    row.append($("<td></td>").text(item.SampleMaleValue)); // Col 3
+    row.append($("<td></td>").attr("data-col", "MaleCompleted")); // Col 4 (realtime)
+    row.append($("<td></td>").text(item.SampleFemaleValue)); // Col 5
+    row.append($("<td></td>").attr("data-col", "FemaleCompleted")); // Col 6 (realtime)
+
+    tableBody.append(row);
+  };
+
+  // const renderTableAreaTracker = (data) => {
+  //   const id = "#table-area-client-tracker";
+  //   // Verifica si la tabla ya existe y destrúyela si es necesario
+  //   if ($.fn.DataTable.isDataTable(id)) {
+  //     $(id).DataTable().clear().destroy();
+  //   }
+
+  //   const tableBody = $(id + " tbody");
+  //   tableBody.empty();
+
+  //   data.forEach((element) => {
+  //     const row = $("<tr></tr>");
+  //     row.append($("<td></td>").text(element.AreaName));
+  //     row.append($("<td></td>").text(element.TotalEmployees));
+  //     row.append($("<td></td>").attr("data-col", "SampleCompleted")); //(realtime)
+  //     row.append($("<td></td>").text(element.MaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "MaleCompleted")); //(realtime)
+  //     row.append($("<td></td>").text(element.FemaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "FemaleCompleted")); //(realtime)
+
+  //     tableBody.append(row);
+  //   });
+
+  //   // Inicializar DataTable
+  //   $(id).DataTable({
+  //     paging: false,
+  //     searching: false,
+  //     info: false,
+  //     ordering: false,
+  //     scrollY: "300px",
+  //     scrollCollapse: true,
+  //   });
+  // };
+
+  // const renderTableSupervisorTracker = (data) => {
+  //   const tableBody = $("#table-supervisor-client-tracker tbody");
+  //   tableBody.empty();
+
+  //   data.forEach((element) => {
+  //     const row = $("<tr></tr>");
+  //     row.append($("<td></td>").text(element.SupervisorName));
+  //     row.append($("<td></td>").text(element.TotalEmployees));
+  //     row.append($("<td></td>").attr("data-col", "SampleCompleted"));
+  //     row.append($("<td></td>").text(element.MaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "MaleCompleted"));
+  //     row.append($("<td></td>").text(element.FemaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "FemaleCompleted"));
+
+  //     tableBody.append(row);
+  //   });
+  // };
+
+  // const renderTableShiftTracker = (data) => {
+  //   const tableBody = $("#table-workshift-client-tracker tbody");
+  //   tableBody.empty();
+
+  //   data.forEach((element) => {
+  //     const row = $("<tr></tr>");
+  //     row.append($("<td></td>").text(element.ShiftName));
+  //     row.append($("<td></td>").text(element.TotalEmployees));
+  //     row.append($("<td></td>").attr("data-col", "SampleCompleted"));
+  //     row.append($("<td></td>").text(element.MaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "MaleCompleted"));
+  //     row.append($("<td></td>").text(element.FemaleEmployees));
+  //     row.append($("<td></td>").attr("data-col", "FemaleCompleted"));
+
+  //     tableBody.append(row);
+  //   });
+  // };
+
+  function renderTrackerTables(tableId, data, columns) {
+    // Verifica y destruye DataTable previa
+    if ($.fn.dataTable && $.fn.dataTable.isDataTable(tableId)) {
+      $(tableId).DataTable().clear().destroy();
+    }
+
+    const tableBody = $(tableId + " tbody");
+    tableBody.empty();
+
+    data.forEach((element) => {
+      const row = $("<tr></tr>");
+
+      columns.forEach((col) => {
+        if (col.realtime) {
+          row.append($("<td></td>").attr("data-col", col.key));
+        } else {
+          row.append($("<td></td>").text(element[col.key] ?? ""));
+        }
+      });
+
+      tableBody.append(row);
+    });
+
+    // Inicializar DataTable
+    $(tableId).DataTable({
+      paging: false,
+      searching: true,
+      info: false,
+      ordering: false,
+      scrollY: "300px",
+      scrollCollapse: true,
+    });
+  }
+
+  $(document).on("click", "#btn-refresh-data", async function () {
+    const project = $("#client-configured-select option:selected")
+      .text()
+      .trim();
+    const year = $("#years-select").val();
+    if (!project || !year) return;
+
+    $(this).html(
+      '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Actualizando...'
+    );
+
+    await refreshRealTimeTables(project, year);
+
+    $(this).html('<i class="bi bi-arrow-clockwise"></i> Actualizar');
+    // Si no hay intervalo activo o el proyecto cambió
+    if (!autoRefreshInterval || project !== lastProject) {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+      }
+
+      lastProject = project;
+
+      // Iniciar intervalo automático solo para este proyecto
+      autoRefreshInterval = setInterval(async () => {
+        const currentProject = $("#client-configured-select option:selected")
+          .text()
+          .trim();
+        const currentYear = $("#years-select").val();
+
+        // Si el proyecto cambió, detener intervalo
+        if (currentProject !== lastProject) {
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
+          return;
+        }
+
+        try {
+          await refreshRealTimeTables(currentProject, currentYear);
+        } catch (error) {
+          console.error("Error al actualizar tablas en tiempo real:", error);
+        }
+      }, 10000); // cada 10 segundos
+    }
+  });
+
+  async function refreshRealTimeTables(project, year) {
+    const general = await fetchTableData("realTimeData.php", {
+      type: "general",
+      project,
+      selectYears: year,
+    });
+    if (general) updateGeneralTableRealTime(general);
+
+    const realTimeArea = await fetchTableData("realTimeData.php", {
+      type: "area",
+      project,
+      selectYears: year,
+    });
+
+    if (realTimeArea)
+      updateDynamicTablesRealTime(
+        "#table-area-client-tracker",
+        realTimeArea,
+        areaTrackerColumns,
+        "AreaName"
+      );
+
+    const realTimeSupervisor = await fetchTableData("realTimeData.php", {
+      type: "supervisor",
+      project,
+      selectYears: year,
+    });
+
+    if (realTimeSupervisor)
+      updateDynamicTablesRealTime(
+        "#table-supervisor-client-tracker",
+        realTimeSupervisor,
+        supervisorTrackerColumns,
+        "SupervisorName"
+      );
+
+    const realTimeShift = await fetchTableData("realTimeData.php", {
+      type: "shift",
+      project,
+      selectYears: year,
+    });
+
+    if (realTimeShift)
+      updateDynamicTablesRealTime(
+        "#table-workshift-client-tracker",
+        realTimeShift,
+        shiftTrackerColumns,
+        "ShiftName"
+      );
+  }
+
+  const updateGeneralTableRealTime = (realtimeData) => {
+    const row = $("#table-general-client-tracker tbody tr").first();
+    if (!row.length) return;
+
+    const data = realtimeData[0]; // Solo una fila esperada
+
+    row.find("td[data-col='SampleCompleted']").text(data.Completed);
+    row.find("td[data-col='MaleCompleted']").text(data.MaleCount);
+    row.find("td[data-col='FemaleCompleted']").text(data.FemaleCount);
+  };
+
+  function updateDynamicTablesRealTime(
+    tableId,
+    realtimeData,
+    columns,
+    matchKey
+  ) {
+    const rows = $(tableId + " tbody tr");
+
+    rows.each(function () {
+      const rowKeyValue = $(this).find("td").first().text().trim();
+
+      const data = realtimeData.find(
+        (item) => String(item[matchKey]).trim() === rowKeyValue
+      );
+
+      if (!data) return;
+
+      // Actualizar solo las columnas marcadas como realtime
+      columns.forEach((col) => {
+        if (col.realtime) {
+          const $cell = $(this).find(`td[data-col='${col.key}']`);
+          const newValue = data[col.key] ?? "";
+
+          if ($cell.text() !== String(newValue)) {
+            $cell.text(newValue).addClass("cell-updated");
+
+            setTimeout(() => $cell.removeClass("cell-updated"), 1000);
+          }
+        }
+      });
+    });
+  }
+
+  try {
+    await renderConfiguredProjects();
+
+    const projectId = (
+      localStorage.getItem("selectedProjectStatus") || ""
+    ).trim();
+    $("#client-configured-select").val(projectId).trigger("change");
+
+    setInterval(async () => {
+      localStorage.removeItem("selectedProjectStatus");
+    }, 5000);
+
+  } catch (error) {
+    console.error("Error al renderizar proyectos configurados:", error);
   }
 }
