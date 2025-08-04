@@ -244,7 +244,9 @@ class Status
                 ss.GeneralSampleFactor,
                 COALESCE(CAST(ss.GeneralSampleFactor * 100 AS DECIMAL), 0) as SamplePercentage,
                 COALESCE(ss.SampleFemaleValue, 0) as SampleFemaleValue,
-                COALESCE(ss.SampleMaleValue, 0) as SampleMaleValue
+                COALESCE(ss.SampleMaleValue, 0) as SampleMaleValue,
+                sc.GuideID,
+				sc.ApplicationDate
             FROM Projects p 
             LEFT JOIN SurveyConfigs sc ON sc.ProjectID = p.ProjectID
             LEFT JOIN SurveySamples ss ON ss.ProjectID = p.ProjectID
@@ -258,7 +260,189 @@ class Status
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
             $pdo->rollBack();
-            error_log("Error al guardar respuestas: " . $e->getMessage());
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+}
+
+
+class Tracker
+{
+    public static function getProjectSurveyGeneralSampleData($projectId, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+              SELECT * FROM SurveySamples WHERE ProjectID = :projectId AND YEAR(CreatedAt) IN (:years)
+        ");
+
+            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_STR);
+            $stmt->bindParam(':years', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getProjectSurveyAreaSampleData($projectId, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+              SELECT * FROM SampleByArea WHERE ProjectID = :projectId AND YEAR(SavedAt) IN (:years)
+        ");
+
+            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_STR);
+            $stmt->bindParam(':years', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+    public static function getProjectSurveySupervisorSampleData($projectId, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+              SELECT * FROM SampleBySupervisor WHERE ProjectID = :projectId AND YEAR(SavedAt) IN (:years)
+        ");
+
+            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_STR);
+            $stmt->bindParam(':years', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getProjectSurveyShiftSampleData($projectId, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+              SELECT * FROM SampleByShift WHERE ProjectID = :projectId AND YEAR(SavedAt) IN (:years)
+        ");
+
+            $stmt->bindParam(':projectId', $projectId, PDO::PARAM_STR);
+            $stmt->bindParam(':years', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    public static function getProjectRealTimeGeneralData($project, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+             SELECT 
+                COUNT(EmployeeNumber) AS Completed,
+                COUNT(CASE WHEN Gender = 'Hombre' THEN 1 END) AS MaleCount,
+                COUNT(CASE WHEN Gender = 'Mujer' THEN 1 END) AS FemaleCount
+                FROM EmployeeSurveyData
+                WHERE Client = :project AND YEAR(SurveyDate) = :year
+            ");
+
+            $stmt->bindParam(':project', $project, PDO::PARAM_STR);
+            $stmt->bindParam(':year', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getProjectRealTimeAreaData($project, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+             SELECT
+                Area AS AreaName,
+                COUNT(EmployeeNumber) AS SampleCompleted,
+                COUNT(CASE WHEN Gender = 'Hombre' THEN 1 END) AS MaleCompleted,
+                COUNT(CASE WHEN Gender = 'Mujer' THEN 1 END) AS FemaleCompleted
+                FROM EmployeeSurveyData
+                WHERE Client = :project AND YEAR(SurveyDate) = :year
+                GROUP BY Area
+            ");
+
+            $stmt->bindParam(':project', $project, PDO::PARAM_STR);
+            $stmt->bindParam(':year', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getProjectRealTimeSupervisorData($project, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+             SELECT
+                Supervisor AS SupervisorName,
+                COUNT(EmployeeNumber) AS SampleCompleted,
+                COUNT(CASE WHEN Gender = 'Hombre' THEN 1 END) AS MaleCompleted,
+                COUNT(CASE WHEN Gender = 'Mujer' THEN 1 END) AS FemaleCompleted
+                FROM EmployeeSurveyData
+                WHERE Client = :project AND YEAR(SurveyDate) = :year
+                GROUP BY Supervisor
+            ");
+
+            $stmt->bindParam(':project', $project, PDO::PARAM_STR);
+            $stmt->bindParam(':year', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function getProjectRealTimeShiftData($project, $selectYears, $pdo)
+    {
+        try {
+            $stmt = $pdo->prepare("
+             SELECT
+                WorkShift as ShiftName,
+                COUNT(EmployeeNumber) AS SampleCompleted,
+                COUNT(CASE WHEN Gender = 'Hombre' THEN 1 END) AS MaleCompleted,
+                COUNT(CASE WHEN Gender = 'Mujer' THEN 1 END) AS FemaleCompleted
+                FROM EmployeeSurveyData
+                WHERE Client = :project AND YEAR(SurveyDate) = :year
+                GROUP BY WorkShift
+            ");
+
+            $stmt->bindParam(':project', $project, PDO::PARAM_STR);
+            $stmt->bindParam(':year', $selectYears, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log("Error al obtener estatus: " . $e->getMessage());
             return false;
         }
     }
