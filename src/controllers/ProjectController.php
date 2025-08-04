@@ -72,4 +72,21 @@ class ProjectController
             ];
         }
     }
+
+    public static function projectConfiguredList($region, $pdo)
+    {
+        $projects = Project::getProjectConfiguredList($region, $pdo);
+
+        if ($projects) {
+            return [
+                'success' => true,
+                'data' => $projects
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'No se encontraron proyectos activos para la región especificada.'
+            ];
+        }
+    }
 }
