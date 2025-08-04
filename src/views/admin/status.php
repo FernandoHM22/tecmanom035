@@ -10,8 +10,8 @@ include __DIR__ . '/../partials/sidebar.php';
     <div class="container-fluid" id="main-content-status">
         <div class="row">
             <div class="col-12">
-                <h2 class="mb-4">Estatus de Encuestas</h2>
-                <p>En esta sección puedes ver el estatus de las encuestas programadas.</p>
+                <h4 class="mb-2">Estatus de guias</h4>
+                <p>En esta sección puedes ver el estatus de las guias programadas para los clientes</p>
             </div>
         </div>
         <div class="row">
