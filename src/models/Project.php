@@ -152,4 +152,17 @@ class Project
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
+  public static function getProjectConfiguredList($region, $pdo)
+  {
+
+    $stmt = $pdo->prepare("
+         SELECT p.ProjectID, p.ProjectName, YEAR(s.CreateAt) as Period FROM Projects p INNER JOIN SurveyConfigs s ON s.ProjectID = p.ProjectID WHERE p.Region = :region
+        ");
+
+    $stmt->bindParam(':region', $region, PDO::PARAM_STR);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
 }
