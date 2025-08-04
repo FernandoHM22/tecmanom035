@@ -35,6 +35,10 @@ $(async function () {
       if (typeof initAdminStatus === "function") await initAdminStatus();
       break;
 
+    case "admin-client-tracker":
+      if (typeof initAdminClientTracker === "function") await initAdminClientTracker();
+      break;
+
     case "auth-register":
       if (typeof initAuth === "function") await initAuth();
       break;
