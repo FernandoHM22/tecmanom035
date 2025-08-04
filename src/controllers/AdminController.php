@@ -59,7 +59,141 @@ class AdminController
         } else {
             return [
                 'success' => false,
-                'message' => 'Empleado no encontrado o inactivo'
+                'message' => 'Estatus del proyecto no encontrado para la región especificada'
+            ];
+        }
+    }
+
+    public static function projectSurveyGeneralSample($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectSurveyGeneralSampleData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+
+    public static function projectSurveyAreaSample($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectSurveyAreaSampleData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+    public static function projectSurveySupervisorSample($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectSurveySupervisorSampleData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+    public static function projectSurveyShiftSample($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectSurveyShiftSampleData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+
+    public static function projectRealTimeGeneralData($project, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectRealTimeGeneralData($project, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+
+    public static function projectRealTimeAreaData($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectRealTimeAreaData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+
+    public static function projectRealTimeSupervisorData($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectRealTimeSupervisorData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
+            ];
+        }
+    }
+
+    public static function projectRealTimeShiftData($projectId, $selectYears, $pdo)
+    {
+        $response = Tracker::getProjectRealTimeShiftData($projectId, $selectYears, $pdo);
+
+        if ($response) {
+            return [
+                'success' => true,
+                'data' => $response
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Muestra general no encontrada para el proyecto especificado'
             ];
         }
     }
