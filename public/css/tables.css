@@ -17,12 +17,51 @@
   text-align: center;
 }
 
+#main-content-status #project-status-table thead th,
+#main-content-client-tracker table thead th {
+  background-color: #328186;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+#main-content-client-tracker #table-general-client-tracker thead th {
+  background-color: transparent !important;
+  color: #616161;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+  border: none;
+}
+
+#main-content-client-tracker #table-general-client-tracker tbody tr td {
+  background-color: #204389 !important;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+  border: none;
+  border-radius: 30px;
+}
+
+#main-content-client-tracker #table-general-client-tracker {
+  border-collapse: separate;
+  border-spacing: 1rem 0.5rem; /* horizontal y vertical */
+}
+
+#main-content-status #project-status-table tbody tr:hover {
+  font-weight: 700;
+}
+
+#main-content-status #project-status-table tbody td {
+  font-size: 0.8rem;
+}
+
 #main-content-status #project-status-table td:not(:first-child),
 #main-content-status #project-status-table th:not(:first-child) {
   text-align: center;
   vertical-align: middle;
 }
-
 
 #main-content-status .sample-ok {
   background-color: #e9fbe9; /* verde claro */
@@ -30,4 +69,140 @@
 
 #main-content-status .sample-missing {
   background-color: #fdecea; /* rojo claro */
+}
+
+/* .dt-paging .pagination .dt-paging-button button {
+  font-size: 0.8rem;
+  background-color: aquamarine;
+}
+
+.dt-paging .pagination .dt-paging-button button:hover {
+  background-color: darkcyan;
+} */
+
+.dt-paging .pagination .dt-paging-button:nth-child(1) button {
+  border-radius: 30px 0 0 30px; /* esquinas redondeadas para el primer botón */
+}
+
+.dt-paging .pagination .dt-paging-button:last-child button {
+  border-radius: 0 30px 30px 0; /* esquinas redondeadas para el último botón */
+}
+
+.dt-search label,
+.dt-length label {
+  font-size: 0.7rem;
+  color: #204389;
+  font-weight: 700 !important;
+}
+
+.dt-search input[type="search"] {
+  background-color: #204389;
+  color: #fff;
+  border-radius: 30px;
+}
+
+.dt-length select {
+  background-color: #204389;
+  color: #fff;
+  border-radius: 30px;
+}
+
+/* Ocultar los botones "Primero" y "Último" */
+.dt-paging-button .first,
+.dt-paging-button .last {
+  display: none !important;
+}
+
+/* Centrar toda la paginación */
+.dt-paging nav ul.pagination {
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+/* Todos los botones */
+.dt-paging-button .page-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  margin: 0 4px;
+
+  background-color: transparent;
+  color: #7c7c7c;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Botón activo (resaltado con borde circular) */
+.dt-paging-button.active .page-link {
+  background-color: white;
+  color: #474747;
+}
+
+/* Botones deshabilitados */
+.dt-paging-button.disabled .page-link {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+/* Flechas ◄ ► */
+.dt-paging-button .previous,
+.dt-paging-button .next {
+  font-size: 18px;
+  padding: 0;
+  background-color: #fff;
+}
+
+.dt-info {
+  font-size: 0.7rem;
+  color: #204389;
+  font-weight: bold;
+}
+
+#tables-tracker-container .tracker-table thead tr th:not(:first-child) {
+  text-align: center;
+}
+
+#tables-tracker-container .tracker-table tbody tr td:not(:first-child) {
+  text-align: center;
+}
+
+#tables-tracker-container .tracker-table tbody tr td {
+  font-size: 0.7rem;
+}
+
+.tracker-table td:nth-child(1),
+.tracker-table td:nth-child(2),
+.tracker-table td:nth-child(4),
+.tracker-table td:nth-child(6) {
+  color: #8b8b8b;
+}
+
+.tracker-table td:nth-child(3),
+.tracker-table td:nth-child(5),
+.tracker-table td:nth-child(7){
+  color: #000000;
+  font-weight: 700;
+}
+
+@keyframes flashUpdate {
+  0% {
+    background-color: #fff8d1;
+  } /* Amarillo claro */
+  50% {
+    background-color: #fff1a6;
+  } /* Más intenso */
+  100% {
+    background-color: transparent;
+  }
+}
+
+.tracker-table td.cell-updated {
+  animation: flashUpdate 1s ease;
 }
