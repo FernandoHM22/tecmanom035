@@ -9,7 +9,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<?php if ($request === 'admin/status'): ?>
+<?php if ($request === 'admin/status' || $request === 'admin/tracker/client'): ?>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
 <?php endif; ?>
