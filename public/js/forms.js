@@ -312,6 +312,26 @@ async function initForms() {
     }
   };
 
+  const sendQueueEmployee = async (scopeType) => {
+    const response = await $.ajax({
+      url: apiUrl("risks/queue.php"),
+      method: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      data: JSON.stringify({
+        employeeNumber: cbCodigo,
+        scopeType: scopeType,
+        answerSet: "main",
+        guideId: guideType,
+      }),
+    });
+
+    if (!response || !response.success) {
+      throw new Error("Error al enviar la cola de empleados.");
+    }
+    return response;
+  };
+
   $(document).on("click", "#btnContinue", () => {
     $("#div-instructions").addClass("d-none");
     $("#div-indications, #div-forms").removeClass("d-none");
@@ -411,6 +431,9 @@ async function initForms() {
     $container.append(html);
 
     $("#submitSurveyBtn").on("click", async function () {
+      const $btn = $(this);
+      $btn.prop("disabled", true);
+
       Swal.fire({
         title: "Guardando...",
         text: "Espere un momento, la página se redireccionará automáticamente al finalizar.",
@@ -424,12 +447,20 @@ async function initForms() {
       try {
         await submitAll();
 
+        const scopes = ["category", "domain"];
+
+        const results = await Promise.allSettled(
+          scopes.map((t) => sendQueueEmployee(t))
+        );
+        console.table(results);
+
         sessionStorage.clear();
 
         Swal.fire({
           icon: "success",
           title: "¡Gracias!",
           text: "Tus respuestas han sido enviadas correctamente.",
+          footer: "No es necesario que realices ninguna otra acción. Estamos redirigiendo...",
           timer: 3000,
           timerProgressBar: true,
           showConfirmButton: false,
@@ -441,8 +472,10 @@ async function initForms() {
         }, 3000);
       } catch (error) {
         // Ya manejas errores en `submitAll`, pero por si acaso:
-        console.error("Error al guardar:", error);
+        console.error("Error al guardar o encolar:", error);
         // Swal.fire de error ya se lanza desde `submitAll`, así que no es obligatorio repetirlo aquí
+      } finally {
+        $btn.prop("disabled", false);
       }
     });
   }
