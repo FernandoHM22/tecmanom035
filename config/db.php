@@ -44,7 +44,7 @@ try {
 
     $dsnTECMAWEST  = "sqlsrv:Server=$hostTECMAWEST,$portTECMAWEST;Database=$dbTECMAWEST";
 
-    $pdoTECMAWEST = new PDO($dsnTECMAWEST, $userTECMAWEST, $passwordTECMAWEST, options: [
+    $pdoTECMAWEST = new PDO($dsnTECMAWEST, $userTECMAWEST, $passwordTECMAWEST, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
