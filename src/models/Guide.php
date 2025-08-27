@@ -20,6 +20,7 @@ class Guide
                 FROM AnswerScales a
                 WHERE a.GuideID = g.GuideID
                 AND a.QuestionID = q.QuestionID
+                ORDER BY a.Id ASC
                 FOR JSON PATH
             ) AS Scale
         FROM Questions q
@@ -28,7 +29,7 @@ class Guide
         LEFT JOIN Categories c ON dom.CategoryID = c.CategoryID
         LEFT JOIN Guides g ON c.GuideID = g.GuideID
         WHERE g.GuideID = :guideValue
-        ORDER BY q.QuestionID
+        ORDER BY q.QuestionID ASC
     ");
 
         $stmt->bindParam(':guideValue', $guideValue, PDO::PARAM_STR);
