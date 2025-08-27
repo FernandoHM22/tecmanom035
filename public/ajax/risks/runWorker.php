@@ -5,7 +5,7 @@ try {
     header('Content-Type: application/json; charset=UTF-8');
 
     $pdo = getConnection(key: 'nom');
-    $batch = Risk::pickNext($pdo, 5);
+    $batch = Risk::pickNext($pdo, 6);
     $done = [];
     foreach ($batch as $job) {
         try {
